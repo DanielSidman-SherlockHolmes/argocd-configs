@@ -1,0 +1,39 @@
+resources:
+- ../../base
+
+# patches:
+#   - replicas.yaml
+
+Namespace: prod
+
+patches:
+  - patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: webapp-deployment
+      spec:
+        replicas: 3
+        template:
+          spec:
+            containers:
+            - name: webapp
+              image: logging-demo:1.0.1
+  - patch: |
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: webapp-service
+      spec:
+        ports:
+          - protocol: TCP
+            port: 80
+            targetPort: 80
+            nodePort: 30104
+
+commonLabels:
+  app: dev-webapp
+
+configMapGenerator:
+- name: webapp-configmap
+  env: config.properties
